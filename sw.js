@@ -1,12 +1,10 @@
 const CACHE_NAME = 'bad-wifi-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/app.js',
-  '/manifest.json',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  './',
+  './index.html',
+  './style.css',
+  './app.js',
+  './manifest.json'
 ];
 
 // Установка
@@ -15,7 +13,9 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('Кэш открыт');
-        return cache.addAll(urlsToCache);
+        return cache.addAll(urlsToCache).catch(err => {
+          console.log('Ошибка кеширования:', err);
+        });
       })
   );
   self.skipWaiting();
@@ -47,7 +47,6 @@ self.addEventListener('fetch', event => {
         }
         
         return fetch(event.request).catch(() => {
-          // Оффлайн страница
           if (event.request.destination === 'document') {
             return new Response(
               `<!DOCTYPE html>
@@ -78,7 +77,6 @@ self.addEventListener('fetch', event => {
                 <div class="error-box">
                   <h1>❌ Нет подключения к Интернету</h1>
                   <p>Проверьте подключение и повторите попытку.</p>
-                  <p><em>(Ирония судьбы: даже симулятор плохого Wi-Fi требует Wi-Fi)</em></p>
                 </div>
               </body>
               </html>`,
@@ -91,22 +89,3 @@ self.addEventListener('fetch', event => {
       })
   );
 });
-```
-
----
-
-## 🎨 Создание иконок
-
-Для иконок вам нужно создать PNG изображения с пиксельным роутером или значком Wi-Fi с восклицательным знаком. Можете использовать любой графический редактор или онлайн-сервис вроде:
-
-- **Pixilart.com** (пиксель-арт редактор)
-- **Piskel** (бесплатный sprite editor)
-- **GIMP** / **Photoshop**
-
-**Рекомендуемый дизайн иконки:**
-```
-192×192 и 512×512
-- Фон: #c0c0c0 (серый Windows)
-- Роутер: пиксельный стиль, черные контуры
-- Красный крестик или восклицательный знак
-- 3D-эффект как в Windows XP
